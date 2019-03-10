@@ -1,0 +1,41 @@
+{
+  "name": "hongkong-map-timeline-web-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server/app.ts",
+    "build": "next build && tsc --project tsconfig.server.json",
+    "postinstall": "next build && rm -rf production-server/ && tsc --project tsconfig.server.json",
+    "start": "NODE_ENV=production node production-server/server/app.js",
+    "now": "now && now alias",
+    "now-rm": "now rm saas-app --safe --yes",
+    "lint": "tslint -p tsconfig.json && tslint -p tsconfig.server.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "express": "^4.16.4",
+    "helmet": "^3.15.1",
+    "isomorphic-unfetch": "^3.0.0",
+    "mobx": "^5.9.0",
+    "mobx-react": "^5.4.3",
+    "next": "^8.0.3",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4"
+  },
+  "devDependencies": {
+    "@types/next": "^8.0.1",
+    "@types/react": "^16.8.7",
+    "@types/react-dom": "^16.8.2",
+    "@types/react-intl": "^2.3.17",
+    "@types/styled-jsx": "^2.2.8",
+    "@zeit/next-typescript": "^1.1.1",
+    "babel-plugin-import": "^1.11.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.5",
+    "ts-node": "^8.0.3",
+    "tslint": "^5.13.1",
+    "typescript": "^3.3.3333"
+  }
+}
