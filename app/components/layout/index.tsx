@@ -2,27 +2,27 @@ import { observer } from 'mobx-react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import { withRouter } from 'next/router';
-import React from 'react';
+import React, { Children } from 'react';
 
 
 type MyProps = {
+  children: React.ReactNode;
 };
 
 class Layout extends React.Component<MyProps> {
 
-  public componentDidMount() {
-  }
+
 
   public componentDidUpdate() {
   }
 
   public render() {
+    const { children } = this.props;
 
     return (
     <div>
-      <AppBar>
+      <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" color="inherit">
             Hong Kong Map Timeline
@@ -30,6 +30,7 @@ class Layout extends React.Component<MyProps> {
 
         </Toolbar>
       </AppBar>
+      { children }
     </div>);
 
 
