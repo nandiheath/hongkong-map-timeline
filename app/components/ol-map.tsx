@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react';
 import React, { Children } from 'react';
-import {Map, View} from 'ol';
+import {Map, View } from 'ol';
+import * as control from 'ol/control';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 
@@ -17,9 +18,14 @@ class OLMap extends React.Component<MyProps> {
           source: new OSM()
         })
       ],
+      controls: control.defaults({
+        attribution: false,
+        zoom: false,
+      }),
       view: new View({
-        center: [0, 0],
-        zoom: 0
+        center: [114.160147, 22.35201],
+        projection: 'EPSG:4326',
+        zoom: 11,
       })
     });
 
