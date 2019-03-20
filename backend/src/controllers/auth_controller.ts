@@ -1,7 +1,7 @@
-import Errors from 'restify-errors';
+import * as RestifyErrors from 'restify-errors';
 // const { logger } = require('./../utils/logger');
 import { validate } from './../utils/validator';
-import User from './../models/user';
+import { User } from './../models/user';
 import { sign } from './../auth/auth';
 import { formatResponse, getUserFromReq } from '../utils/api_helper';
 
@@ -27,7 +27,7 @@ export async function login(req, res, next) {
   }
 
   if (!authenticated) {
-    throw new Errors.UnauthorizedError('password incorrect');
+    throw new RestifyErrors.UnauthorizedError('password incorrect');
   } else {
     const token = await sign(user);
     res.send(formatResponse({ user, token }));
@@ -48,17 +48,16 @@ export async function register(req, res, next) {
   const user = new User({
     username,
     mobile,
-    password_hash: passwordHash
+    password_hash: passwordHash,
   });
   await user.save();
   const token = await sign(user);
   res.send(formatResponse({
     user,
-    token
+    token,
   }));
   return next();
 }
-
 
 /**
  *
@@ -90,11 +89,10 @@ export async function facebookLogin(req, res, next) {
   return next();
 }
 
-
 export async function me(req, res, next) {
   const user = await getUserFromReq(req);
   res.send(formatResponse({
-    user
+    user,
   }));
   return next();
 }
