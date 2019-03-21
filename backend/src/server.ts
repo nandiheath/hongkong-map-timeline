@@ -34,6 +34,7 @@ if (MONGODB_USER !== '') {
 }
 
 mongoose.connect(mongoDB, opt);
+mongoose.set('useCreateIndex', true);
 mongoose.Promise = require('bluebird');
 
 const server = restify.createServer({
@@ -45,14 +46,6 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 server.use(passport.initialize());
-
-//
-if (LOGGER_LEVEL === 'debug') {
-  server.use((req, res, next) => {
-    logger.debug(req);
-    next();
-  });
-}
 
 route(server);
 

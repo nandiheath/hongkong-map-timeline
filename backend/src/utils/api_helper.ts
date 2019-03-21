@@ -1,7 +1,7 @@
 
 import { User } from '../models/user';
 import {
-  entityNotFound, unauthoirzedRequest, entityAlreadyExists, dbConnectionFailed, internalError,
+  EntityNotFound, UnauthoirzedRequest, EntityAlreadyExists, DBConnectionFailed, InternalError,
 } from './api_error';
 const passport = require('passport');
 // const { logger } = require('./../utils/logger');
@@ -18,9 +18,9 @@ export const passportAuthenicate = (authMethod) => {
     passport.authenticate(authMethod, (err, user) => {
       if (err) {
         if (err.code === 11000) {
-          return next(entityAlreadyExists());
+          return next(EntityAlreadyExists());
         }
-        return next(internalError(err));
+        return next(InternalError(err));
       }
       req.logIn(user, (err) => {
         if (err) { return next(err); }
@@ -52,7 +52,7 @@ export const getUserFromReq = async (req) => {
   const { id } = req.session.passport.user;
   const user = await User.findById(id);
   if (user === null) {
-    throw unauthoirzedRequest();
+    throw UnauthoirzedRequest();
   }
   return user;
 };
@@ -86,7 +86,7 @@ export const getModel = ModelClass => async (req, res, next) => {
   const { id } = req.params;
   const instance = await ModelClass.findById(id);
   if (instance === null) {
-    return next(entityNotFound());
+    return next(EntityNotFound());
   }
 
   res.send(formatResponse(instance));
@@ -104,7 +104,7 @@ export const updateModel = ModelClass => async (req, res, next) => {
   const { id } = req.params;
   const instance = await ModelClass.findById(id);
   if (instance === null) {
-    return next(entityNotFound());
+    return next(EntityNotFound());
   }
 
   const doc = req.body;
@@ -127,12 +127,12 @@ export const addSubDocToModel = (ModelClass, fieldName) => async (req, res, next
   const { id, subdoc_id } = req.params;
   const instance = await ModelClass.findById(id);
   if (instance === null) {
-    return next(entityNotFound());
+    return next(EntityNotFound());
   }
 
   const subdoc = instance[fieldName].find(doc => doc.id === subdoc_id);
   if (subdoc !== undefined) {
-    return next(entityAlreadyExists());
+    return next(EntityAlreadyExists());
   }
 
   // update and return the document
@@ -145,7 +145,7 @@ export const addSubDocToModel = (ModelClass, fieldName) => async (req, res, next
   if (result.ok) {
     res.send(formatResponse({}));
   } else {
-    return next(dbConnectionFailed());
+    return next(DBConnectionFailed());
   }
   return next();
 };
@@ -154,12 +154,12 @@ export const removeSubDocToModel = (ModelClass, fieldName) => async (req, res, n
   const { id, subdoc_id } = req.params;
   const instance = await ModelClass.findById(id);
   if (instance === null) {
-    return next(entityNotFound());
+    return next(EntityNotFound());
   }
 
   const subdoc = instance[fieldName].find(doc => doc.id === subdoc_id);
   if (subdoc === undefined) {
-    return next(entityNotFound());
+    return next(EntityNotFound());
   }
 
   const updateDoc = {
@@ -173,7 +173,7 @@ export const removeSubDocToModel = (ModelClass, fieldName) => async (req, res, n
   if (result.ok) {
     res.send(formatResponse({}));
   } else {
-    return next(dbConnectionFailed());
+    return next(DBConnectionFailed());
   }
   return next();
 };

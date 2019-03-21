@@ -1,6 +1,6 @@
 import * as RestifyErrors from 'restify-errors';
 // const { logger } = require('./../utils/logger');
-import { validate } from './../utils/validator';
+
 import { User } from './../models/user';
 import { sign } from './../auth/auth';
 import { formatResponse, getUserFromReq } from '../utils/api_helper';
@@ -12,7 +12,6 @@ import { formatResponse, getUserFromReq } from '../utils/api_helper';
  * @param {*} next
  */
 export async function login(req, res, next) {
-  validate(req, { password: 'string' });
   const query:any = {};
   if (req.body.mobile) {
     query.mobile = req.body.mobile;
@@ -36,13 +35,31 @@ export async function login(req, res, next) {
 }
 
 /**
- * POST /auth/register
- * @param {*} req
- * @param {*} res
- * @param {*} next
+ *
+ * @api {post} /auth/register Register a user
+ * @apiName Register
+ * @apiGroup auth
+ * @apiVersion  1.0.0
+ * @apiHeader (AuthHeader) {String} Content-Type application/json
+ * @apiParamExample {json} Request Example:
+                   {
+                      username: String,
+                      password: String,
+                      mobile: String
+                   }
+ * @apiSuccessExample {type} Success-Response:
+ * {
+ *     success: true,
+ *     data: {
+ *        user: {
+ *            id: String,
+ *            username: String
+ *        },
+ *        token: String
+ *      }
+ * }
  */
 export async function register(req, res, next) {
-  validate(req, { username: 'string', password: 'string', mobile: 'string' });
   const { username, password, mobile } = req.body;
   const passwordHash = await User.hashPassword(password);
   const user = new User({

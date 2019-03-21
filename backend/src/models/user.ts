@@ -5,10 +5,9 @@ const bcrypt = PromiseBluebird.promisifyAll(require('bcrypt'));
 
 const UserSchema = new Schema(
   {
-    username: { type: String, index: true },
-    mobile: { type: String, unique: true, sparse: true },
+    username: { type: String },
     password_hash: String,
-    facebook_id: { type: String, unique: true, sparse: true },
+    facebook_id: { type: String },
   },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
@@ -16,6 +15,15 @@ const UserSchema = new Schema(
       transform: jsonTransform(['password_hash']),
     },
   });
+
+// Index for username
+UserSchema.index(
+  {
+    username: 1,
+    facebook_id: 1,
+  },
+  { unique: true },
+);
 
 UserSchema.methods.verifyPassword = async function verifyPassword(password) {
   return bcrypt.compareAsync(password, this.password_hash);
@@ -29,7 +37,7 @@ UserSchema.statics.hashPassword = async function hashPassword(password) {
  * Public interface for user model
  */
 export interface IUser {
-  username? :string;
+  username?: string;
   mobile?: string;
   facebook_id?: string;
 }
@@ -42,4 +50,4 @@ export interface IUserDocument extends IUser, Document {
   hashPassword(): string;
 }
 
-export const User: Model<IUserDocument> =  model<IUserDocument>('User', UserSchema);
+export const User: Model<IUserDocument> = model<IUserDocument>('User', UserSchema);
