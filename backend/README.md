@@ -62,6 +62,9 @@ npm run dev
 ### Production
 
 ```bash
+# create a .env-test for setting up a mongodb for testing
+cp .env-sample .env-test
+
 # run the unit tests and integration tests
 npm run test
 

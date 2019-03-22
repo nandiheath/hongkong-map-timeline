@@ -21,14 +21,32 @@ export async function list(req: restify.Request, res: restify.Response, next: re
 }
 
 export async function create(req: restify.Request, res: restify.Response, next: restify.Next): Promise<void> {
-  const { name, description, location, address } = req.body;
+  const { name, description, location, address, provider, provider_id, year_from, year_to } = req.body;
 
   const place = new Place({
     name,
-    description,
-    location,
-    address,
+    provider,
+    provider_id,
+    location: {
+      type: 'Point',
+      // Note that longitude comes first in a GeoJSON coordinate array, not latitude.
+      coordinates: [location.lng, location.lat],
+    },
   });
+
+  if (address) {
+    place.address = address;
+  }
+  if (description) {
+    place.description = description;
+  }
+  if (year_from) {
+    place.year_from = year_from;
+  }
+  if (year_to) {
+    place.year_to = year_to;
+  }
+
   // Let the async middleware handle the error
   await place.save();
   res.send(formatResponse({

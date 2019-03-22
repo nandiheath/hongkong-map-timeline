@@ -35,6 +35,10 @@ describe('api', () => {
     mongoose.connect(mongoDB, opt);
   });
 
+  after(() => {
+    mongoose.connection.close();
+  });
+
   describe('auth', () => {
     after((done) => {
       mongoose.connection.db.dropCollection('users', done);
@@ -49,47 +53,26 @@ describe('api', () => {
       const res = await chai.request(server).post('/auth/register').type('json').send({
         username: 'abc',
         password: 'abc',
-        mobile: '99999999',
       });
       expect(res.status).to.be.eq(200);
       expect(res.body.success).to.be.true;
       expect(res.body.access_token).to.be.not.null;
     });
 
-    it('it should return error for duplicated keys', async() => {
-      let res = await chai.request(server).post('/auth/register').type('json').send({
-        username: 'abc',
-        password: 'abc',
-        mobile: '99999999',
-      });
-      expect(res.status).to.be.eq(200);
-
-      res = await chai.request(server).post('/auth/register').type('json').send({
-        username: 'abc',
-        password: 'abc',
-        mobile: '99999999',
-      });
-      expect(res.status).to.be.eq(500);
-
-    });
-
-    it('it should be able to register through facebook', async function () {
-
+    it('it should return error for duplicated keys', async function () {
       this.timeout(5000);
       const requester = chai.request(server).keepOpen();
+      let res = await requester.post('/auth/register').type('json').send({
+        username: 'abc',
+        password: 'abc',
+      });
+      expect(res.status).to.be.eq(200);
 
-      let res = await requester.post('/auth/facebook').type('json').send({
-        access_token: process.env.FACEBOOK_TEST_USER1_TOKEN,
+      res = await requester.post('/auth/register').type('json').send({
+        username: 'abc',
+        password: 'abc',
       });
-      expect(res.status).to.be.eq(200);
-      expect(res.body.success).to.be.true;
-      expect(res.body.access_token).to.be.not.null;
-      res = await requester.post('/auth/facebook').type('json').send({
-        access_token: process.env.FACEBOOK_TEST_USER2_TOKEN,
-      });
-      expect(res.status).to.be.eq(200);
-      expect(res.body.success).to.be.true;
-      expect(res.body.access_token).to.be.not.null;
+      expect(res.status).to.be.eq(500);
 
     });
   });

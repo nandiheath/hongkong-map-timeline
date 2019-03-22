@@ -8,6 +8,7 @@ import {
 
 // controllers
 import * as authController from './controllers/auth_controller';
+import * as placeController from './controllers/place_controller';
 
 export const route = (server) => {
   // auth
@@ -15,5 +16,8 @@ export const route = (server) => {
   server.post('/auth/register', validate('/auth/register'), asyncMiddleware(authController.register));
   server.get('/me', passport.authenticate('jwt'), asyncMiddleware(authController.me));
   server.post('/auth/facebook', passportAuthenicate('facebook'), asyncMiddleware(authController.facebookLogin));
+
+  // place
+  server.post('/place', validate('/place'), asyncMiddleware(placeController.create));
 
 };
