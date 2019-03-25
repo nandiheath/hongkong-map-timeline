@@ -1,8 +1,11 @@
 import { observer } from 'mobx-react';
 import React, { Children } from 'react';
-import { Map, View } from 'ol';
+import { Map, View, Feature } from 'ol';
+import { Point } from 'ol/geom';
+import { transform } from 'ol/proj';
 import * as control from 'ol/control';
 import TileLayer from 'ol/layer/Tile';
+import * as ol from 'ol';
 import OSM from 'ol/source/OSM';
 
 
@@ -36,10 +39,26 @@ class OLMap extends React.Component<MyProps> {
   private async onMoveEnd(evt) {
     const map = evt.map;
     const center = map.getView().getCenter();
-    
-    
+
+
     const res = await fetch(`http://localhost:1337/place?lat=${center[1]}&lng=${center[0]}&r=1000`);
-    console.log(res);
+    const { data: {
+      places,
+    } } = await res.json();
+    const features = places.map(place => new Feature({
+      geometry: new Point(transform([place.lng, place.lat], 'EPSG:4326',     
+      'EPSG:3857')),
+      name: place.name.zh_hk
+    }))
+
+    const vectorSource = new ol.source.Vector({
+      features //add an array of features
+    });
+
+    const vectorLayer = new ol.layer.Vector({
+      source: vectorSource      
+    });
+    map.addLayer(vectorLayer);
   }
 
   public componentDidUpdate() {
