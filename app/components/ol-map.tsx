@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react';
 import React, { Children } from 'react';
-import {Map, View } from 'ol';
+import { Map, View } from 'ol';
 import * as control from 'ol/control';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
+
 
 type MyProps = {
 };
@@ -29,6 +30,16 @@ class OLMap extends React.Component<MyProps> {
       })
     });
 
+    map.on('moveend', this.onMoveEnd);
+  }
+
+  private async onMoveEnd(evt) {
+    const map = evt.map;
+    const center = map.getView().getCenter();
+    
+    
+    const res = await fetch(`http://localhost:1337/place?lat=${center[1]}&lng=${center[0]}&r=1000`);
+    console.log(res);
   }
 
   public componentDidUpdate() {
@@ -41,8 +52,6 @@ class OLMap extends React.Component<MyProps> {
 
 
   }
-
-
 }
 
 export default observer(OLMap);
