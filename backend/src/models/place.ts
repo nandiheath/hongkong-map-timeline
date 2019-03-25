@@ -32,7 +32,12 @@ const PlaceSchema = new Schema(
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
     toJSON: {
-      transform: jsonTransform([]),
+      transform: jsonTransform([], (ret) => {
+        ret.location = {
+          lat: ret.location.coordinates[1],
+          lng: ret.location.coordinates[0],
+        };
+      }),
     },
   });
 

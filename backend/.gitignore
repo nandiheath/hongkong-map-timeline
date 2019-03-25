@@ -62,3 +62,5 @@ typings/
 
 # build file
 built
+
+.env*

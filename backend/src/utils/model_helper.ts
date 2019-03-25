@@ -2,7 +2,7 @@
  * Helper function to remove the important fields
  * @param fieldsToHide: string[]
  */
-export function jsonTransform(fieldsToHide: string[]): (doc: object, ret: object) => object {
+export function jsonTransform(fieldsToHide: string[], modifier?: Function): (doc: object, ret: object) => object {
   return (doc: any, ret: any) => {
     ret.id = doc.id;
     delete ret._id;
@@ -12,6 +12,11 @@ export function jsonTransform(fieldsToHide: string[]): (doc: object, ret: object
     for (const field of fieldsToHide) {
       delete ret[field];
     }
+
+    if (modifier) {
+      return modifier(ret);
+    }
+
     return ret;
   };
 }
