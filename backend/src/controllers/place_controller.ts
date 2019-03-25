@@ -20,6 +20,42 @@ export async function list(req: restify.Request, res: restify.Response, next: re
   return next();
 }
 
+/**
+ *
+ * @api {post} /place Create a new place
+ * @apiName Place
+ * @apiGroup place
+ * @apiVersion  1.0.0
+ * @apiHeader (AuthHeader) {String} Content-Type application/json
+ * @apiParamExample {json} Request Example:
+                   {
+                      name: {
+                        zh_hk: String,
+                        en_us: String,
+                      },
+                      description: {
+                        zh_hk: String,
+                        en_us: String,
+                      },
+                      location: {
+                        lat: Number.
+                        lng: Number,
+                      },
+                      provider: String, // ['manual', 'had']
+                      provider_id: String
+                   }
+ * @apiSuccessExample {type} Success-Response:
+ * {
+ *     success: true,
+ *     data: {
+ *        user: {
+ *            id: String,
+ *            username: String
+ *        },
+ *        token: String
+ *      }
+ * }
+ */
 export async function create(req: restify.Request, res: restify.Response, next: restify.Next): Promise<void> {
   const { name, description, location, address, provider, provider_id, year_from, year_to } = req.body;
 
