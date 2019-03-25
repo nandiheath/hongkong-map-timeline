@@ -1,6 +1,7 @@
 import { Place, IPlaceDocument } from './../models/place';
 import * as restify from 'restify';
 import { formatResponse, getUserFromReq } from '../utils/api_helper';
+import logger from '../utils/logger';
 
 
 /**
@@ -20,9 +21,12 @@ import { formatResponse, getUserFromReq } from '../utils/api_helper';
  */
 export async function list(req: restify.Request, res: restify.Response, next: restify.Next): Promise<void> {
   const {
-    lat,
-    lng,
-    r,
+    lat = 22.2983061,
+    lng = 114.1600453,
+    r = 1000,
+    limit = 100,
+    year_from = 0,
+    year_to = 2999,
   } = req.query;
 
   const query: any = {
@@ -35,9 +39,21 @@ export async function list(req: restify.Request, res: restify.Response, next: re
         $maxDistance: r * 1000,
       },
     },
+    year_from: {
+      $gte: year_from,
+    },
+    year_to: {
+      $lte: year_to,
+    },
   };
 
-  const places: IPlaceDocument[] = await Place.find(query, null, { limit: 100 });
+  let places: IPlaceDocument[] = [];
+  try {
+    places = await Place.find(query, null, { limit: limit > 500 ? 500 : limit });
+  } catch (error) {
+    logger.error(error.message);
+    logger.error(error.stack);
+  }
 
   // TODO: pagination
 
