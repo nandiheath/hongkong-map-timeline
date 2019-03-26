@@ -24,7 +24,7 @@ export async function list(req: restify.Request, res: restify.Response, next: re
     lat = 22.2983061,
     lng = 114.1600453,
     r = 1000,
-    limit = 100,
+    limit = 1000,
     year_from = 0,
     year_to = 2999,
   } = req.query;
@@ -49,7 +49,7 @@ export async function list(req: restify.Request, res: restify.Response, next: re
 
   let places: IPlaceDocument[] = [];
   try {
-    places = await Place.find(query, null, { limit: limit > 500 ? 500 : limit });
+    places = await Place.find(query, null, { limit: limit > 1000 ? 1000 : limit });
   } catch (error) {
     logger.error(error.message);
     logger.error(error.stack);
