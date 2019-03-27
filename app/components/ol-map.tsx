@@ -20,6 +20,8 @@ class OLMap extends React.Component<MyProps> {
   private styleCache: any;
   private overlay: Overlay;
   private popupContent: any;
+  private interaction: Select;
+  private map: Map;
 
   public componentDidMount() {
 
@@ -35,7 +37,13 @@ class OLMap extends React.Component<MyProps> {
 
     const container = this.refs.popup;
     this.popupContent = this.refs['popup-content'];
-    
+    const closer:any = this.refs['popup-closer'];
+
+    // Since the overlay "stopEvent" is set to true,
+    // if we bind the onClick event at the render method, 
+    // it won't be fire. 
+    closer.onclick = this.onPopupCloseClicked.bind(this);
+
 
     this.overlay = new Overlay({
       element: container,
@@ -45,7 +53,7 @@ class OLMap extends React.Component<MyProps> {
       }
     });
 
-    const map = new Map({
+    this.map = new Map({
       target: this.refs.mapContainer,
       layers: [
         new TileLayer({
@@ -67,49 +75,25 @@ class OLMap extends React.Component<MyProps> {
       })
     });
 
-    map.on('moveend', this.onMoveEnd.bind(this));
+    this.map.on('moveend', this.onMoveEnd.bind(this));
 
     // select interaction working on "click"
-    const selectClick = new Select({
+    this.interaction = new Select({
       condition: click
     });
 
-    map.addInteraction(selectClick);
-    selectClick.on('select', this.onFeatureSelected.bind(this));
-  }
-
-  private onPopupCloseClicked(evt) {
-    evt.stopPropagation();
-    this.clearPopup();
-  }
-
-  private onFeatureSelected(evt) {
-    console.log('clicked');
-    const select: Select = evt.target;
-    if (select === undefined) {
-      
-      return;
-    }
-    const features: Feature[] = select.getFeatures().getArray();
-    if (features && features.length > 0) {
-      const clusteredFeatures: Feature[] = features[0].get('features');
-
-      // Set the popup location
-      const coordinates = features[0].getGeometry().getCoordinates();
-      this.overlay.setPosition(coordinates);
-
-      // set the features
-      this.setPopupText(clusteredFeatures);
-    } else {
-      this.clearPopup();
-    }
+    this.map.addInteraction(this.interaction);
+    this.interaction.on('select', this.onFeatureSelected.bind(this));    
   }
 
   private clearPopup() {
+    this.interaction.setActive(true);
     this.overlay.setPosition(undefined);
   }
 
-  private setPopupText(features) {
+  private showPopup(coordinates, features) {
+    this.overlay.setPosition(coordinates);
+    this.interaction.setActive(false);
     let text = '';
     features.forEach( (feature, index) => {
       if (index < 5) {
@@ -123,6 +107,36 @@ class OLMap extends React.Component<MyProps> {
 
     this.popupContent.innerHTML = text;
   }
+
+  private onPopupCloseClicked(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    
+    this.clearPopup();
+    return false;
+  }
+
+  private onFeatureSelected(evt) {
+    const select: Select = evt.target;
+    if (select === undefined) {
+      
+      return;
+    }
+    const features: Feature[] = select.getFeatures().getArray();
+    if (features && features.length > 0) {
+      const clusteredFeatures: Feature[] = features[0].get('features');
+
+      // Set the popup location
+      const coordinates = features[0].getGeometry().getCoordinates();
+      
+      // set the features
+      this.showPopup(coordinates, clusteredFeatures);
+    } else {
+      this.clearPopup();
+    }
+  }
+
+  
 
   /**
    * For caching the styles used for clustered feature
@@ -188,7 +202,7 @@ class OLMap extends React.Component<MyProps> {
     return (
       <div>
         <div ref="popup" className="ol-popup" >
-          <a ref="popup-closer" href="#" className="ol-popup-closer" onClick={this.onPopupCloseClicked.bind(this)}></a>
+          <a ref="popup-closer" href="#" className="ol-popup-closer"></a>
           <div ref="popup-content" ></div>
         </div>
         <div ref="mapContainer" > </div>
