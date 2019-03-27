@@ -39,6 +39,10 @@ app.prepare().then(() => {
     res.sendFile(path.join(__dirname, '../static', 'robots.txt'));
   });
 
+  server.get('/place/:slug/:uuid', (req, res) => {
+    return app.render(req, res, '/place', { slug: req.params.slug, uuid: req.params.uuid })
+  })
+
   server.get('*', (req, res) => {
     handle(req, res);
   });

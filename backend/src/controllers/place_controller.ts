@@ -3,11 +3,10 @@ import * as restify from 'restify';
 import { formatResponse, getUserFromReq } from '../utils/api_helper';
 import logger from '../utils/logger';
 
-
 /**
  *
  * @api {get} /place Get places
- * @apiName get_place
+ * @apiName list_place
  * @apiGroup place
  * @apiVersion  1.0.0
  * @apiHeader (AuthHeader) {String} Content-Type application/json
@@ -49,7 +48,13 @@ export async function list(req: restify.Request, res: restify.Response, next: re
 
   let places: IPlaceDocument[] = [];
   try {
-    places = await Place.find(query, null, { limit: limit > 1000 ? 1000 : limit });
+    places = await Place.find(query, {
+      'location': 1,
+      'id': 1,
+      'name': 1,
+      'year_from': 1,
+      'year_to': 1,
+    }, { limit: limit > 1000 ? 1000 : limit });
   } catch (error) {
     logger.error(error.message);
     logger.error(error.stack);
@@ -60,6 +65,38 @@ export async function list(req: restify.Request, res: restify.Response, next: re
   res.send(formatResponse({
     places,
   }));
+  return next();
+}
+
+
+/**
+ *
+ * @api {get} /place/:id Get place
+ * @apiName get_place
+ * @apiGroup place
+ * @apiVersion  1.0.0
+ * @apiHeader (AuthHeader) {String} Content-Type application/json
+ * @apiSuccessExample {type} Success-Response:
+ * {
+ *     success: true,
+ * }
+ */
+export async function get(req: restify.Request, res: restify.Response, next: restify.Next): Promise<void> {
+  const {
+    id
+  } = req.params;
+
+  let place: IPlaceDocument;
+  try {
+    place = await Place.findOne({ _id: id });
+  } catch (error) {
+    logger.error(error.message);
+    logger.error(error.stack);
+  }
+
+  // TODO: pagination
+
+  res.send(formatResponse(place));
   return next();
 }
 

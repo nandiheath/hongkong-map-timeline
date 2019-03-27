@@ -6,24 +6,42 @@ import * as control from 'ol/control';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import { Cluster, OSM, Vector as VectorSource } from 'ol/source';
 import { Circle as CircleStyle, Fill, Stroke, Style, Text } from 'ol/style';
-import { click, pointerMove, altKeyOnly } from 'ol/events/condition';
+import { click } from 'ol/events/condition';
 import Select from 'ol/interaction/Select';
 import Overlay from 'ol/Overlay';
-import Collection from 'ol/Collection';
+import dynamic from 'next/dynamic'
+import { getPlaces } from './../lib/api';
 
-type MyProps = {
+const OLMapPopup = dynamic(
+  () => import('./ol-map-popup'),
+  {
+    ssr: false
+  }
+)
+interface OLMapProps {
 };
 
-class OLMap extends React.Component<MyProps> {
+interface OLMapState {
+  selectedFeatures: Feature[]
+}
+
+class OLMap extends React.Component<OLMapProps, OLMapState> {
 
   private vectorLayer: VectorLayer;
   private styleCache: any;
   private overlay: Overlay;
-  private popupContent: any;
   private interaction: Select;
   private map: Map;
 
+  constructor(props: OLMapProps) {
+    super(props);
+    this.state = {
+      selectedFeatures: []
+    }
+  }
+
   public componentDidMount() {
+
 
     // Prepare the ol map obejct
     this.styleCache = {};
@@ -36,8 +54,7 @@ class OLMap extends React.Component<MyProps> {
     });
 
     const container = this.refs.popup;
-    this.popupContent = this.refs['popup-content'];
-    const closer:any = this.refs['popup-closer'];
+    const closer: any = this.refs['popup-closer'];
 
     // Since the overlay "stopEvent" is set to true,
     // if we bind the onClick event at the render method, 
@@ -83,43 +100,36 @@ class OLMap extends React.Component<MyProps> {
     });
 
     this.map.addInteraction(this.interaction);
-    this.interaction.on('select', this.onFeatureSelected.bind(this));    
+    this.interaction.on('select', this.onFeatureSelected.bind(this));
   }
 
   private clearPopup() {
-    this.interaction.setActive(true);
     this.overlay.setPosition(undefined);
   }
 
   private showPopup(coordinates, features) {
+    this.setState({
+      selectedFeatures: features
+    });
     this.overlay.setPosition(coordinates);
-    this.interaction.setActive(false);
-    let text = '';
-    features.forEach( (feature, index) => {
-      if (index < 5) {
-        text += feature.get('name') + '<br>';
-      }      
-    })
-
-    if (features.length > 5) {
-      text += `...(${features.length})`
-    }
-
-    this.popupContent.innerHTML = text;
   }
 
   private onPopupCloseClicked(evt) {
     evt.preventDefault();
     evt.stopPropagation();
-    
+
     this.clearPopup();
     return false;
   }
 
+  /**
+   * fired by openlayer map's Interaction:Select
+   * @param evt 
+   */
   private onFeatureSelected(evt) {
     const select: Select = evt.target;
     if (select === undefined) {
-      
+
       return;
     }
     const features: Feature[] = select.getFeatures().getArray();
@@ -128,7 +138,7 @@ class OLMap extends React.Component<MyProps> {
 
       // Set the popup location
       const coordinates = features[0].getGeometry().getCoordinates();
-      
+
       // set the features
       this.showPopup(coordinates, clusteredFeatures);
     } else {
@@ -136,7 +146,7 @@ class OLMap extends React.Component<MyProps> {
     }
   }
 
-  
+
 
   /**
    * For caching the styles used for clustered feature
@@ -180,13 +190,11 @@ class OLMap extends React.Component<MyProps> {
     const map = evt.map;
     const center = map.getView().getCenter();
 
-    const res = await fetch(`http://localhost:1337/place?lat=${center[1]}&lng=${center[0]}&r=10000`);
-    const { data: {
-      places,
-    } } = await res.json();
+    const places = await getPlaces(center[1], center[0], 10000);
     const features = places.map(place => new Feature({
       geometry: new Point([place.location.lng, place.location.lat]),
-      name: place.name.zh_hk
+      name: place.name.zh_hk,
+      id: place.id
     }))
 
     const source: VectorSource = this.vectorLayer.getSource().getSource();
@@ -203,11 +211,16 @@ class OLMap extends React.Component<MyProps> {
       <div>
         <div ref="popup" className="ol-popup" >
           <a ref="popup-closer" href="#" className="ol-popup-closer"></a>
-          <div ref="popup-content" ></div>
+          <OLMapPopup features={this.state.selectedFeatures}></OLMapPopup>
         </div>
-        <div ref="mapContainer" > </div>
+        <div ref="mapContainer" className="mapContainer"> </div>
         {/* Styled CSS */}
-        <style jsx global>{`
+        <style jsx>{`
+          .mapContainer {
+            height: 100%;
+            width: 100%;
+            position: fixed;
+          }
           .ol-popup {
             position: absolute;
             background-color: white;

@@ -20,5 +20,6 @@ export const route = (server) => {
   // place
   server.post('/place', validate('/place'), asyncMiddleware(placeController.create));
   server.get('/place', asyncMiddleware(placeController.list));
+  server.get('/place/:id', asyncMiddleware(placeController.get));
 
 };
