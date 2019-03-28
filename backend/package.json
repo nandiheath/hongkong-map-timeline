@@ -44,6 +44,7 @@
   "scripts": {
     "test": "DOTENV_CONFIG_PATH=.env-test mocha --require ts-node/register --recursive -r dotenv/config ./test/**/*.ts",
     "compile": "tsc && node built/server.js",
+    "build": "NODE_ENV=production tsc",
     "dev": "nodemon -e ts --exec \"npm run compile\"",
     "apidoc": "apidoc -i src/ -o ../docs"
   },

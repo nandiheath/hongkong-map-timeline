@@ -10,7 +10,7 @@ dotenv.config();
 import logger from './utils/logger';
 import { route } from './route';
 import {
-  MONGODB_HOST, MONGODB_DATABASE, MONGODB_USER, MONGODB_PASSWORD, LOGGER_LEVEL,
+  MONGODB_HOST, MONGODB_DATABASE, MONGODB_USER, MONGODB_PASSWORD, ROOT_ROUTE
 } from './common/env';
 
 // use the passport
@@ -46,6 +46,12 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 server.use(passport.initialize());
+server.pre((req: restify.Request, res:restify.Response, next:restify.next) => {
+  var regex = new RegExp(`^${ROOT_ROUTE}`,"g");
+  req.url = req.url.replace(regex, '');
+  console.log(req.url);
+  next();
+});
 
 if (process.env.NODE_ENV !== 'production') {
   server.use(
