@@ -48,13 +48,18 @@ export async function list(req: restify.Request, res: restify.Response, next: re
 
   let places: IPlaceDocument[] = [];
   try {
-    places = await Place.find(query, {
-      'location': 1,
-      'id': 1,
-      'name': 1,
-      'year_from': 1,
-      'year_to': 1,
-    }, { limit: limit > 1000 ? 1000 : limit });
+    places = await Place.find(
+      query,
+      {
+        location: 1,
+        id: 1,
+        name: 1,
+        year_from: 1,
+        year_to: 1,
+      },
+      {
+        limit: limit > 1000 ? 1000 : limit,
+      });
   } catch (error) {
     logger.error(error.message);
     logger.error(error.stack);
@@ -67,7 +72,6 @@ export async function list(req: restify.Request, res: restify.Response, next: re
   }));
   return next();
 }
-
 
 /**
  *
@@ -83,7 +87,7 @@ export async function list(req: restify.Request, res: restify.Response, next: re
  */
 export async function get(req: restify.Request, res: restify.Response, next: restify.Next): Promise<void> {
   const {
-    id
+    id,
   } = req.params;
 
   let place: IPlaceDocument;

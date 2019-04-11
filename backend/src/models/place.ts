@@ -5,8 +5,6 @@ import { Localizable, ILocalizable } from './localizable';
 import { TagSchema, ITagDocument } from './tag';
 import { PLACE_PROVIDER } from './../common/common';
 
-const bcrypt = PromiseBluebird.promisifyAll(require('bcrypt'));
-
 const PlaceSchema = new Schema(
   {
     name: Localizable({ index: true }),
@@ -28,6 +26,8 @@ const PlaceSchema = new Schema(
       enum: PLACE_PROVIDER,
     },
     provider_id: String,
+    // reference: [link]
+    // remark? location/year not certain
   },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
