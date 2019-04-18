@@ -3,7 +3,7 @@
   <div>
     <div ref="popup" class="ol-popup">
       <a ref="popup-closer" href="#" class="ol-popup-closer"></a>
-      <!-- <OLMapPopup features="{this.state.selectedFeatures}"></OLMapPopup> -->
+      <OLMapPopup :features="this.selectedFeatures"></OLMapPopup>
     </div>
     <div ref="mapContainer" class="mapContainer"></div>
   </div>
@@ -75,15 +75,22 @@ import Select from 'ol/interaction/Select'
 import Overlay from 'ol/Overlay'
 import { Component, Vue } from 'vue-property-decorator'
 import { getPlaces } from '~/lib/api';
-@Component
-class OLMap extends Vue {
+import OLMapPopup from './OLMapPopup.vue';
+
+@Component({
+  components: {
+    OLMapPopup
+  }
+})
+export default class OLMap extends Vue {
+
   private vectorLayer: VectorLayer
   private styleCache: any
   private overlay: Overlay
   private interaction: Select
   private map: Map
 
-  private selectedFeatures: Feature[]
+  selectedFeatures: Feature[] = [];
 
   mounted() {
     // Prepare the ol map obejct
@@ -238,5 +245,5 @@ class OLMap extends Vue {
   }
 }
 
-export default OLMap
+
 </script>
