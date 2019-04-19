@@ -1,8 +1,9 @@
-import { Place, IPlaceDocument } from './../models/place';
+import { Place, IPlaceDocument, IPlace } from './../models/place';
+import { PlaceLinkage, IPlaceLinkageDocument } from './../models/place_linkage';
 import * as restify from 'restify';
 import { formatResponse, getUserFromReq } from '../utils/api_helper';
 import logger from '../utils/logger';
-
+import * as uuid from 'uuid/v4';
 /**
  *
  * @api {get} /place Get places
@@ -104,6 +105,36 @@ export async function get(req: restify.Request, res: restify.Response, next: res
   return next();
 }
 
+
+/**
+ *
+ * @api {get} /place/:id Get place
+ * @apiName get_place
+ * @apiGroup place
+ * @apiVersion  1.0.0
+ * @apiHeader (AuthHeader) {String} Content-Type application/json
+ * @apiSuccessExample {type} Success-Response:
+ * {
+ *     success: true,
+ * }
+ */
+export async function getLinkage(req: restify.Request, res: restify.Response, next: restify.Next): Promise<void> {
+  const {
+    id,
+  } = req.params;
+
+  const placeLinkages: IPlaceLinkageDocument[] = await PlaceLinkage.find({
+    $or: [
+      { 'linkages.parents': id },
+      { 'linkages.children': id },
+    ],
+  })
+  .populate('linkages.children', ['name', 'year_from', 'year_to'])
+  .populate('linkages.parents', ['name', 'year_from', 'year_to']);
+  res.send(formatResponse(placeLinkages));
+  return next();
+}
+
 /**
  *
  * @api {post} /place Create a new place
@@ -138,7 +169,7 @@ export async function get(req: restify.Request, res: restify.Response, next: res
 export async function create(req: restify.Request, res: restify.Response, next: restify.Next): Promise<void> {
   const { name, description, location, address, provider, provider_id, year_from, year_to } = req.body;
 
-  const place = new Place({
+  const place: IPlaceDocument = new Place({
     name,
     provider,
     provider_id,
@@ -160,6 +191,10 @@ export async function create(req: restify.Request, res: restify.Response, next: 
   }
   if (year_to) {
     place.year_to = year_to;
+  }
+
+  if (provider && provider === 'manual') {
+    place.provider_id = uuid();
   }
 
   // Let the async middleware handle the error

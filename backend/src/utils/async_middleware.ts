@@ -2,8 +2,8 @@
  * Created by Nandi Wong on 29/11/2017.
  */
 
-import { EntityAlreadyExists, InternalError } from './utils/api_error';
-import logger from './utils/logger';
+import { EntityAlreadyExists, InternalError } from './api_error';
+import logger from './logger';
 
 export const asyncMiddleware = fn => (req, res, next) => {
   // Catch all the error

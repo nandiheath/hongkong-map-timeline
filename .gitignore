@@ -61,3 +61,5 @@ typings/
 .next
 
 app_next/
+
+backend/doc/
