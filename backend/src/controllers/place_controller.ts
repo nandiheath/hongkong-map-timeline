@@ -14,6 +14,7 @@ import * as uuid from 'uuid/v4';
  * @apiParam (Query) {Number} lat The latitude of the center point
  * @apiParam (Query) {Number} lng The longitude of the center point
  * @apiParam (Query) {Number} r   The radius (in meters) to query
+ * @apiParam (Query) {Number} year   The year that want to query
  * @apiSuccessExample {type} Success-Response:
  * {
  *     success: true,
@@ -25,8 +26,7 @@ export async function list(req: restify.Request, res: restify.Response, next: re
     lng = 114.1600453,
     r = 1000,
     limit = 1000,
-    year_from = 0,
-    year_to = 2999,
+    year = 2019,
   } = req.query;
 
   const query: any = {
@@ -40,10 +40,10 @@ export async function list(req: restify.Request, res: restify.Response, next: re
       },
     },
     year_from: {
-      $gte: year_from,
+      $lte: year,
     },
     year_to: {
-      $lte: year_to,
+      $gte: year,
     },
   };
 

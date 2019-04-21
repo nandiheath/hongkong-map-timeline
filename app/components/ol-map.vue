@@ -6,6 +6,15 @@
       <OLMapPopup :features="this.selectedFeatures"></OLMapPopup>
     </div>
     <div ref="mapContainer" class="mapContainer"></div>
+    <v-layout class="slider">
+      <v-flex>
+        <v-slider v-model="year" :max="currentYear" :min="1900" :step="5" v-on:change="onSliderValueChanged"></v-slider>
+      </v-flex>
+
+      <v-flex shrink class="slider-text">
+        <v-text-field v-model="year" class="mt-0" hide-details single-line type="number"></v-text-field>
+      </v-flex>
+    </v-layout>
   </div>
 </template>
 
@@ -15,6 +24,19 @@
   width: 100%;
   position: fixed;
 }
+
+.slider {
+  width: 100%;
+  position: absolute;
+  padding-left: 20px;
+}
+
+.slider-text {
+  width: 60px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
 .ol-popup {
   position: absolute;
   background-color: white;
@@ -74,29 +96,33 @@ import { click } from 'ol/events/condition'
 import Select from 'ol/interaction/Select'
 import Overlay from 'ol/Overlay'
 import { Component, Vue } from 'vue-property-decorator'
-import { getPlaces } from '~/lib/api';
-import OLMapPopup from './ol-map-popup.vue';
-import { Action } from 'vuex-class';
+import { getPlaces } from '~/lib/api'
+import OLMapPopup from './ol-map-popup.vue'
+import { Action } from 'vuex-class'
+import * as moment from 'moment'
 
 @Component({
   components: {
     OLMapPopup
   }
 })
-
 export default class OLMap extends Vue {
-
   private vectorLayer: VectorLayer
   private styleCache: any
   private overlay: Overlay
   private interaction: Select
   private map: Map
 
-  @Action('clearSelectedPlace', { namespace: 'modules/map' }) clearSelectedPlace: Function;
+  currentYear: number = parseInt(moment().format('YYYY'), 10);
 
-  selectedFeatures: Feature[] = [];
+  @Action('clearSelectedPlace', { namespace: 'modules/map' })
+  clearSelectedPlace: Function
 
+  selectedFeatures: Feature[] = []
 
+  year: number = this.currentYear;
+
+  center: number[];
 
   mounted() {
     // Prepare the ol map obejct
@@ -157,11 +183,32 @@ export default class OLMap extends Vue {
     this.interaction.on('select', this.onFeatureSelected.bind(this))
   }
 
+
+  onSliderValueChanged() {
+    this.reloadPlaces();
+  }
+
+  async reloadPlaces() {
+    const places = await getPlaces(this.center[1], this.center[0], 10000, this.year);
+    const features = places.map(
+      place =>
+        new Feature({
+          geometry: new Point([place.location.lng, place.location.lat]),
+          name: place.name.zh_hk,
+          id: place.id,
+          place
+        })
+    )
+    const source: VectorSource = this.vectorLayer.getSource().getSource()
+    source.clear()
+    source.addFeatures(features)
+  }
+
   private clearPopup() {
-    this.overlay.setPosition(undefined);
+    this.overlay.setPosition(undefined)
 
     // clear also the state
-    this.clearSelectedPlace();
+    this.clearSelectedPlace()
   }
 
   private showPopup(coordinates, features) {
@@ -176,6 +223,7 @@ export default class OLMap extends Vue {
     this.clearPopup()
     return false
   }
+
 
   /**
    * fired by openlayer map's Interaction:Select
@@ -238,22 +286,9 @@ export default class OLMap extends Vue {
     // reset the popup
     this.clearPopup()
     const map = evt.map
-    const center = map.getView().getCenter()
-    const places = await getPlaces(center[1], center[0], 10000)
-    const features = places.map(
-      place =>
-        new Feature({
-          geometry: new Point([place.location.lng, place.location.lat]),
-          name: place.name.zh_hk,
-          id: place.id,
-          place,
-        })
-    )
-    const source: VectorSource = this.vectorLayer.getSource().getSource()
-    source.clear()
-    source.addFeatures(features)
+    this.center = map.getView().getCenter();
+    this.reloadPlaces();
+
   }
 }
-
-
 </script>

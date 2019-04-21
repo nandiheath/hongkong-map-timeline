@@ -3,10 +3,10 @@ import axios from 'axios';
 import { API_HOST } from './config';
 import { generateLinkageTree, IPlaceLinkageNode } from './models/place-linkage';
 
-export async function getPlaces(lat: Number, lng: Number, radius: Number): Promise<IPlace[]> {
+export async function getPlaces(lat: Number, lng: Number, radius: Number, year: number): Promise<IPlace[]> {
   let places: IPlace[] = []
   try {
-    const { data } = await axios.get(`${API_HOST}/place/?lat=${lat}&lng=${lng}&r=${radius}`);
+    const { data } = await axios.get(`${API_HOST}/place/?lat=${lat}&lng=${lng}&r=${radius}&year=${year}`);
 
     places = data.data.places;
   } catch (error) {
