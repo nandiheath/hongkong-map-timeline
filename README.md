@@ -1,13 +1,30 @@
 # hongkong-map-timeline
-## Dependencies
-MongoDB
 
 ## Setup Environment
+
+### Requirements
+
+- MongoDB
+- npm
+
+## Development
+
 ### API server
 
 ```bash
+# install dependencies
 cd backend
-npm i
+# set the enviroment variables with ```.env``` file
+cp .env-sample .env
+
+# modify the env file
+
+# install dependecies and start the server
+npm install
+
+
+npm run dev
+# the server will listen on port 1337
 ```
 
 For Windows users who encounter issues installing **bcrypt** (Can't find Python executable), please run the following command to install the Windows Build Tools using **an elevated (Administrator) terminal** window which installs the **VS Build Tools** and also **Python 2.7**
@@ -16,25 +33,28 @@ For Windows users who encounter issues installing **bcrypt** (Can't find Python 
 npm install --global --production windows-build-tools
 ```
 
-### web server
+### Import the data via api
+
+```bash
+cd scripts/had-import
+
+# install dependecies
+npm install
+
+# import the csv to db
+node had-importer.js import data/had_result_20190311.csv localhost:1337
+
+```
+
+### Start the frontend server
 
 ```bash
 cd app
-npm i
-```
 
-## Start Development
-set the enviroment variables with ```.env``` file
-### Start the API server
 
-```bash
-cd backend
-npm run dev
-```
+# install dependecies and start the server
+npm install
 
-### Run the web server for the front-end
-
-```bash
-cd app
+# the server will listen on port 3000
 npm run dev
 ```

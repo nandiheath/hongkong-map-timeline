@@ -12,4 +12,5 @@ export default interface IPlace {
   },
   year_from: Number;
   year_to: Number;
+
 }

@@ -33,9 +33,7 @@ async function startSendDataToAPI(host, data) {
     }
 
     if (!year_built) {
-      log(name);
     }
-    return;
 
     const res = await request.postAsync({
       url: `http://${path.join(host, '/place')}`,
@@ -50,14 +48,16 @@ async function startSendDataToAPI(host, data) {
         address: {
           zh_hk: `${address1}`
         },
-        year_from: year_built,
+        year_from: parseInt(year_built),
         provider: 'had',
         provider_id: providerId,
       }
     });
+    console.log(res.body)
     if (res.body.success) {
       successCount += 1;
     }
+    console.log(`${successCount}/${data.length}`);
   }
 
   async.eachOfLimit(data, 20, createPlace, (err) => {
