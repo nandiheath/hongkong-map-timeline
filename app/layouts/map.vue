@@ -7,19 +7,7 @@
       permanent
       app
     >
-      <v-list>
-        <v-list-tile
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title" />
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
+      <PlaceLinkagePanel />
     </v-navigation-drawer>
     <v-toolbar :clipped-left="clipped" fixed app>
       <v-toolbar-side-icon @click="drawer = !drawer" />
@@ -39,10 +27,16 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { State } from 'vuex-class';
 import IPlace from '../lib/models/place';
+import PlaceLinkagePanel from '~/components/place-linkage/place-linkage-panel.vue';
 
-@Component
+@Component({
+  components: {
+    PlaceLinkagePanel
+  }
+})
 export default class MapLayout extends Vue {
   @State('selectedPlace', { namespace: 'modules/map' }) selectedPlace:IPlace;
+
 
   data() {
     return {

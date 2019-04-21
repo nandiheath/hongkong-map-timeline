@@ -1,5 +1,5 @@
 import IPlace from '~/lib/models/place';
-import IPlaceLinkage from '~/lib/models/place-linkage';
+import { IPlaceLinkageNode } from '~/lib/models/place-linkage';
 import { ActionTree, MutationTree, ActionContext } from 'vuex';
 import { RootState } from '../index';
 import { getPlaceLinkage } from '~/lib/api';
@@ -7,7 +7,7 @@ import { getPlaceLinkage } from '~/lib/api';
 
 export interface State {
   selectedPlace: IPlace | null,
-  selectedPlaceLinkage: IPlaceLinkage | null
+  selectedPlaceLinkageNodes: IPlaceLinkageNode[]
 };
 
 export interface Actions<S, R> extends ActionTree<S, R> {
@@ -20,22 +20,21 @@ export interface Actions<S, R> extends ActionTree<S, R> {
 
 export const state = (): State => ({
   selectedPlace: null,
-  selectedPlaceLinkage: null,
+  selectedPlaceLinkageNodes: [],
 })
 
 
 export const actions: Actions<State, RootState> = {
   async setSelectedPlace({ commit }, place: IPlace) {
-    console.log(place);
     commit('setPlace', place);
-    const placeLinkage:IPlaceLinkage = await getPlaceLinkage(place.id);
+    const placeLinkageNodes:IPlaceLinkageNode[] = await getPlaceLinkage(place.id);
 
-    commit('setPlaceLinkage', placeLinkage);
+    commit('setSelectedPlaceLinkageNodes', placeLinkageNodes);
   },
 
   clearSelectedPlace({ commit }): void {
     commit('setPlace', null);
-    commit('setPlaceLinkage', null);
+    commit('setSelectedPlaceLinkageNodes', null);
   }
 
 }
@@ -45,7 +44,7 @@ export const mutations: MutationTree<State> = {
     state.selectedPlace = place;
   },
 
-  setPlaceLinkage(state: State, placeLinkage: IPlaceLinkage) {
-    state.selectedPlaceLinkage = placeLinkage;
+  setSelectedPlaceLinkageNodes(state: State, placeLinkageNodes: IPlaceLinkageNode[]) {
+    state.selectedPlaceLinkageNodes = placeLinkageNodes;
   }
 }

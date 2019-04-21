@@ -1,7 +1,7 @@
 import IPlace from './models/place';
 import axios from 'axios';
 import { API_HOST } from './config';
-import IPlaceLinkage from './models/place-linkage';
+import { generateLinkageTree, IPlaceLinkageNode } from './models/place-linkage';
 
 export async function getPlaces(lat: Number, lng: Number, radius: Number): Promise<IPlace[]> {
   let places: IPlace[] = []
@@ -29,10 +29,10 @@ export async function getPlace(id: String): Promise<IPlace | null> {
   }
 }
 
-export async function getPlaceLinkage(id: String): Promise<IPlaceLinkage> {
+export async function getPlaceLinkage(id: string): Promise<IPlaceLinkageNode[]> {
   try {
     const { data }  = await axios.get(`${API_HOST}/place/${id}/linkage`);
-    return data.data;
+    return generateLinkageTree(data.data, id);
   } catch (error) {
     console.error(error.message);
     console.error(error.stack);

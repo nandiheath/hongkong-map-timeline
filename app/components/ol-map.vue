@@ -75,8 +75,8 @@ import Select from 'ol/interaction/Select'
 import Overlay from 'ol/Overlay'
 import { Component, Vue } from 'vue-property-decorator'
 import { getPlaces } from '~/lib/api';
-import OLMapPopup from './OLMapPopup.vue';
-
+import OLMapPopup from './ol-map-popup.vue';
+import { Action } from 'vuex-class';
 
 @Component({
   components: {
@@ -91,6 +91,8 @@ export default class OLMap extends Vue {
   private overlay: Overlay
   private interaction: Select
   private map: Map
+
+  @Action('clearSelectedPlace', { namespace: 'modules/map' }) clearSelectedPlace: Function;
 
   selectedFeatures: Feature[] = [];
 
@@ -156,7 +158,10 @@ export default class OLMap extends Vue {
   }
 
   private clearPopup() {
-    this.overlay.setPosition(undefined)
+    this.overlay.setPosition(undefined);
+
+    // clear also the state
+    this.clearSelectedPlace();
   }
 
   private showPopup(coordinates, features) {

@@ -9,7 +9,7 @@
 <script>
 let OLMap
 if (process.client) {
-  OLMap = require('~/components/OLMap.vue').default
+  OLMap = require('~/components/ol-map.vue').default
 }
 
 export default {
