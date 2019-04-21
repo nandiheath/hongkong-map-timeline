@@ -49,6 +49,7 @@
     "compile": "tsc && node built/server.js",
     "build": "NODE_ENV=production tsc",
     "dev": "nodemon -e ts --exec \"npm run compile\"",
+    "watchdoc": "nodemon -e ts --exec \"npm run apidoc\"",
     "apidoc": "apidoc -i src/ -o ../docs"
   },
   "author": "Nandi Wong",

@@ -77,11 +77,13 @@ import { Component, Vue } from 'vue-property-decorator'
 import { getPlaces } from '~/lib/api';
 import OLMapPopup from './OLMapPopup.vue';
 
+
 @Component({
   components: {
     OLMapPopup
   }
 })
+
 export default class OLMap extends Vue {
 
   private vectorLayer: VectorLayer
@@ -91,6 +93,8 @@ export default class OLMap extends Vue {
   private map: Map
 
   selectedFeatures: Feature[] = [];
+
+
 
   mounted() {
     // Prepare the ol map obejct
@@ -134,9 +138,9 @@ export default class OLMap extends Vue {
         rotate: false
       }),
       view: new View({
-        center: [114.160147, 22.35201],
+        center: [114.0282350963625, 22.446477450926306],
         projection: 'EPSG:4326',
-        zoom: 11
+        zoom: 19
       })
     })
 
@@ -236,7 +240,8 @@ export default class OLMap extends Vue {
         new Feature({
           geometry: new Point([place.location.lng, place.location.lat]),
           name: place.name.zh_hk,
-          id: place.id
+          id: place.id,
+          place,
         })
     )
     const source: VectorSource = this.vectorLayer.getSource().getSource()

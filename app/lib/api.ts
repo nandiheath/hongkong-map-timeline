@@ -1,11 +1,12 @@
 import IPlace from './models/place';
 import axios from 'axios';
 import { API_HOST } from './config';
+import IPlaceLinkage from './models/place-linkage';
 
 export async function getPlaces(lat: Number, lng: Number, radius: Number): Promise<IPlace[]> {
   let places: IPlace[] = []
   try {
-    const { data } = await axios.get(`${API_HOST}/place?lat=${lat}&lng=${lng}&r=${radius}`);
+    const { data } = await axios.get(`${API_HOST}/place/?lat=${lat}&lng=${lng}&r=${radius}`);
 
     places = data.data.places;
   } catch (error) {
@@ -16,10 +17,21 @@ export async function getPlaces(lat: Number, lng: Number, radius: Number): Promi
 }
 
 
-export async function getPlace(id: String): Promise<IPlace> {
+export async function getPlace(id: String): Promise<IPlace | null> {
 
   try {
     const { data }  = await axios.get(`${API_HOST}/place/${id}`);
+    return data.data;
+  } catch (error) {
+    console.error(error.message);
+    console.error(error.stack);
+    return null;
+  }
+}
+
+export async function getPlaceLinkage(id: String): Promise<IPlaceLinkage> {
+  try {
+    const { data }  = await axios.get(`${API_HOST}/place/${id}/linkage`);
     return data.data;
   } catch (error) {
     console.error(error.message);

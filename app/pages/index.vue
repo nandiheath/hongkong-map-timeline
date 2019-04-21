@@ -13,6 +13,7 @@ if (process.client) {
 }
 
 export default {
+  layout: 'map',
   components: {
     OLMap
   }

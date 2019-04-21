@@ -108,11 +108,27 @@ export async function get(req: restify.Request, res: restify.Response, next: res
 
 /**
  *
- * @api {get} /place/:id Get place
- * @apiName get_place
+ * @api {get} /place/:id/linkage Get linkage of a place
+ * @apiName get_place_linkage
  * @apiGroup place
  * @apiVersion  1.0.0
  * @apiHeader (AuthHeader) {String} Content-Type application/json
+ * @apiParam (Param) {String} id page id
+ *
+ * @apiSuccess (200) {Object[]} data all linkages of the place
+ * @apiSuccess (200) {String} data.id id of the place linkage
+ * @apiSuccess (200) {Object[]} data.linkages linkages of the place linkage
+ * @apiSuccess (200) {Object[]} data.linkages.parents parents of a the place linkage
+ * @apiSuccess (200) {Localizable} data.linkages.parents.name name of the place
+ * @apiSuccess (200) {Number} data.linkages.parents.year_from year_from
+ * @apiSuccess (200) {Number} data.linkages.parents.year_to year_to
+ * @apiSuccess (200) {String} data.linkages.parents.id id
+ * @apiSuccess (200) {Object[]} data.linkages.children children of a single linkage
+ * @apiSuccess (200) {Localizable} data.linkages.children.name name of the place
+ * @apiSuccess (200) {Number} data.linkages.children.year_from year_from
+ * @apiSuccess (200) {Number} data.linkages.children.year_to year_to
+ * @apiSuccess (200) {String} data.linkages.children.id id
+ * @apiSuccess (200) {String} data.linkages.type type of the linkage
  * @apiSuccessExample {type} Success-Response:
  * {
  *     success: true,

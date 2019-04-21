@@ -1,6 +1,6 @@
 import Localizable from './localizable';
 
-export default interface IPlace {
+export default interface IPlaceLinkage {
   id: String,
   name: Localizable;
   description?: Localizable;
