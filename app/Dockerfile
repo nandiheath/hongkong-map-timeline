@@ -25,15 +25,7 @@ COPY package.json .
 # install node packages
 RUN npm set progress=false \
     && npm config set depth 0 \
-    && npm install
-
-#
-#     -- Build --
-#
-
-FROM dependencies AS build
-COPY . .
-RUN npm run build
+    && npm install --only=production
 
 #
 #     -- Release
@@ -49,9 +41,6 @@ WORKDIR /opt/app
 
 # copy all the production only node modules
 COPY --from=dependencies /tmp/node_modules ./node_modules
-
-# copy all the production only node modules
-COPY --from=build /tmp/.nuxt ./.nuxt
 
 # copy everythings without those indicated in .dockerignore
 COPY . .
