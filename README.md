@@ -36,7 +36,7 @@ npm install --global --production windows-build-tools
 ### Import the data via api
 
 ```bash
-cd scripts/had-import
+cd scripts/had-importer
 
 # install dependecies
 npm install
