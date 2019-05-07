@@ -18,6 +18,11 @@ cd backend
 cp .env-sample .env
 
 # modify the env file
+Please set the following 4 env:
+- FACEBOOK_APP_ID
+- FACEBOOK_APP_SECRET
+- MONGODB_HOST
+- MONGODB_DATABASE
 
 # install dependecies and start the server
 npm install
@@ -36,7 +41,7 @@ npm install --global --production windows-build-tools
 ### Import the data via api
 
 ```bash
-cd scripts/had-import
+cd scripts/had-importer
 
 # install dependecies
 npm install

@@ -8,7 +8,7 @@
     <div ref="mapContainer" class="mapContainer"></div>
     <v-layout class="slider">
       <v-flex>
-        <v-slider v-model="year" :max="currentYear" :min="1900" :step="5" v-on:change="onSliderValueChanged"></v-slider>
+        <v-slider color="#FFF" v-model="year" :max="currentYear" :min="1900" :step="5" v-on:change="onSliderValueChanged"></v-slider>
       </v-flex>
 
       <v-flex shrink class="slider-text">
@@ -26,13 +26,14 @@
 }
 
 .slider {
+  background-color: #212121;
   width: 100%;
   position: absolute;
   padding-left: 20px;
 }
 
 .slider-text {
-  width: 60px;
+  width: 100px;
   margin-left: 15px;
   margin-right: 15px;
 }
